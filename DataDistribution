@@ -1,0 +1,35 @@
+import pymysql
+import pandas
+import numpy
+from matplotlib import pylab
+
+connect = pymysql.connect(host='127.0.0.1',user='root',passwd='sqlgujinxin',db='tb')
+sql = 'select * from taob;'
+sql_data = pandas.read_sql(sql,connect)
+
+print(sql_data[sql_data['price'] > 7000])
+price = sql_data['price'].copy()
+comment = sql_data['comment'].copy()
+
+price[(price > 1000)|(price == 0)] = 36
+comment[comment > 100000] = 58
+
+price_max = price.max()
+price_min = price.min()
+
+comment_max = comment.max()
+comment_min = comment.min()
+
+price_range = price_max - price_min
+comment_range = comment_max - comment_min
+
+price_width = price_range/12
+comment_width = comment_range/12
+
+sty1 = numpy.arange(price_min,price_max,price_width)
+sty2 = numpy.arange(comment_min,comment_max,comment_width)
+pylab.subplot(1,2,1)
+pylab.hist(price,bins=sty1)
+pylab.subplot(1,2,2)
+pylab.hist(comment,bins=sty2)
+pylab.show()
